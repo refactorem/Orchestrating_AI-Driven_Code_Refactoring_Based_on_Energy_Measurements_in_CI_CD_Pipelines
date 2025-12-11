@@ -1,0 +1,26 @@
+name: tests
+
+on:
+  workflow_dispatch:
+
+jobs:
+  benchmark:
+    runs-on: self-hosted
+    steps:    
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Upgrade pip and install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run benchmark 30 times
+        run: |
+          for i in {1..30}; do
+            echo "Starting benchmark run $i"
+            ~/runner-config/scripts/setup.sh "start_measurement" "baseline=true" "benchmark" "software" "perf" "interval=10" "events=power/energy-pkg/,power/energy-cores/"       
+            pytest --benchmark-only --benchmark-save=benchmark_run_$i        
+            ~/runner-config/scripts/setup.sh "end_measurement" "benchmark"
+            echo "Completed benchmark run $i"
+          done
