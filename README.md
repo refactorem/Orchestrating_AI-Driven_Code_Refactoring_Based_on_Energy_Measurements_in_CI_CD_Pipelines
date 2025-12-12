@@ -9,24 +9,8 @@ As modern software systems grow in complexity and scale, their energy consumptio
 ![Logo del proyecto](assets/workflow.svg)
 
 ##  Repository Structure
-    ├── assets/
-    │   ├── workflow.svg
-    │   └── (other visual assets)
-    │
-    ├── evaluation/
-    │   ├── results/
-    │   ├── metrics/
-    │   └── (evaluation artifacts)
-    │
-    ├── workflow/
-    │   ├── n8n/
-    │   ├── agents/
-    │   └── (workflow configuration and orchestration files)
-    │
-    ├── scripts/
-    │   ├── measure_energy.sh
-    │   ├── refactor.py
-    │   ├── verify.py
-    │   └── (utility scripts)
-    │
-    └── README.md
+
+- **assets/** — Visual resources
+- **evaluation/** — Evaluation results
+- **workflow/** — n8n JSON workflow definitions  
+- **scripts/** — Automation scripts for the workflow
