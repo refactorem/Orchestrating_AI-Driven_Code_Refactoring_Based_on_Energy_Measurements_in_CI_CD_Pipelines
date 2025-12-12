@@ -8,8 +8,6 @@ As modern software systems grow in complexity and scale, their energy consumptio
 
 ![Logo del proyecto](assets/workflow.svg)
 
-## Repository Structure
-
 ##  Repository Structure
     ├── assets/
     │   ├── workflow.svg
