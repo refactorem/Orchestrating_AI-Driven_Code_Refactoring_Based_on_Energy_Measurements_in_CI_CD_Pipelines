@@ -1,0 +1,424 @@
+{
+  "name": "Create Refactor Branch",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -496,
+        0
+      ],
+      "id": "4fa68da9-67e7-4e37-bedb-751c2080eecb",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.github.com/repos/{{$input.item.json[\"repository\"]}}/git/refs",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "=ref",
+              "value": "=refs/heads/refactored/{{$input.item.json[\"branch\"]}}-{{$input.item.json[\"commitHash\"]}}"
+            },
+            {
+              "name": "sha",
+              "value": "={{$input.item.json[\"commitHash\"]}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -240,
+        0
+      ],
+      "id": "5127290a-9c68-4f5a-a200-b579ebbcccac",
+      "name": "Create Git Ref",
+      "executeOnce": false,
+      "credentials": {
+        "githubApi": {
+          "id": "jFgjSdNtWWIi5k0G",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{$json.repository}}/contents/{{$json.path}}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "ref",
+              "value": "={{$json.ref}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        288,
+        0
+      ],
+      "id": "965ff1a3-1003-4d9c-9287-e989c00aa778",
+      "name": "Get File Content",
+      "executeOnce": false,
+      "credentials": {
+        "githubApi": {
+          "id": "jFgjSdNtWWIi5k0G",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.github.com/repos/{{$json.repository}}/git/blobs",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "content",
+              "value": "={{$json.encodedContent}}"
+            },
+            {
+              "name": "encoding",
+              "value": "base64"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        768,
+        0
+      ],
+      "id": "d5e4acf7-c1d5-44cc-9846-775d4a25e8a9",
+      "name": "Create Git Blobs",
+      "credentials": {
+        "githubApi": {
+          "id": "jFgjSdNtWWIi5k0G",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.github.com/repos/{{$json.repoInfo.repository}}/git/trees",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{$json.content}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1264,
+        0
+      ],
+      "id": "9cf98292-46aa-48d6-b6ed-99a60fcda14b",
+      "name": "Create Git Tree",
+      "credentials": {
+        "githubApi": {
+          "id": "jFgjSdNtWWIi5k0G",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.github.com/repos/{{$json.repoInfo.repository}}/git/commits",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{$json.content}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        304
+      ],
+      "id": "4f44f829-2d75-4970-951d-d4267fbd1198",
+      "name": "Create Git Commit",
+      "credentials": {
+        "githubApi": {
+          "id": "jFgjSdNtWWIi5k0G",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.github.com/repos/{{$json.repoInfo.repository}}/git/refs/heads/{{$json.repoInfo.branch}}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{$json.content}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        496,
+        304
+      ],
+      "id": "05f59796-5372-419a-b4c0-f4f8a7566e9e",
+      "name": "Create Git Push",
+      "credentials": {
+        "githubApi": {
+          "id": "jFgjSdNtWWIi5k0G",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const workflowItems = $items(\"When Executed by Another Workflow\");\nconst firstItem = workflowItems[0]?.json;\n\nconst item1 = {\n    json: {\n        repository: firstItem?.repository,\n        branch: firstItem?.branch,\n        commit: firstItem?.commitHash\n    }\n};\n\nconst inputItems = $input.all();\nconst ref = inputItems[0]?.json?.ref;\nconst branchFromRef = ref ? ref.split('/').slice(2).join('/') : null;\n\nconst commit = inputItems[0]?.json?.object.sha; \n\nconst item2 = {\n    json: {\n        repository: firstItem?.repository,\n        branch: branchFromRef,\n        commit: commit\n    }\n};\n\nreturn [item1, item2];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        704,
+        304
+      ],
+      "id": "78b8db18-6a23-4ca0-b607-2a3713cd8b37",
+      "name": "Format Data"
+    },
+    {
+      "parameters": {
+        "jsCode": "const changes = $items(\"When Executed by Another Workflow\"); \nconst repository = $node[\"When Executed by Another Workflow\"].json.repository;\nconst branch = $node[\"When Executed by Another Workflow\"].json.branch;\nconst commitHash = $node[\"When Executed by Another Workflow\"].json.commitHash;\n\nreturn changes\n  .filter(item => item.json.path)\n  .map(item => ({\n    json: {\n      repository,\n      path: item.json.path,\n      ref: `refactored/${branch}-${commitHash}`\n    }\n  }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "476e467e-ce72-4995-bb72-a5c806e89ae8",
+      "name": "Prepare Get File Content"
+    },
+    {
+      "parameters": {
+        "jsCode": "const changes = $items(\"When Executed by Another Workflow\");\nconst { repository } = $node[\"When Executed by Another Workflow\"].json;\n\nreturn changes\n  .filter(item => item.json.refactoredEncoded && item.json.path) // solo archivos válidos\n  .map(item => ({\n    json: {\n      repository,\n      path: item.json.path,\n      encodedContent: item.json.refactoredEncoded,\n    }\n  }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        528,
+        0
+      ],
+      "id": "9b677c91-77b7-4959-b9dd-f8646317b751",
+      "name": "Prepare Git Blobs"
+    },
+    {
+      "parameters": {
+        "jsCode": "const treeNode = items[0].json; \nconst treeSha = treeNode.sha;\n\nconst createBranchItems = $items(\"Create Git Ref\");\nif (!createBranchItems || createBranchItems.length === 0) {\n    throw new Error(\"No output found from the Create Branch node\");\n}\nconst baseCommitNode = createBranchItems[0].json;\n\nconst baseCommitSha = baseCommitNode.object?.sha || baseCommitNode.commitHash;\nconst branchName = baseCommitNode.ref ? baseCommitNode.ref.replace(\"refs/heads/\", \"\") : \"main\";\n\nconst repositoryName = baseCommitNode.repository || \"[user_or_organization]/[repository_name]\";\n\nreturn [\n    {\n        json: {\n            repoInfo: {\n                repository: repositoryName,\n                branch: branchName\n            },\n            content: {\n                message: \"Refactor files via n8n automation\",\n                tree: treeSha,\n                parents: [baseCommitSha]\n            }\n        }\n    }\n];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        304
+      ],
+      "id": "3f0ddccf-db4e-4898-a297-b1d091c92941",
+      "name": "Prepare Git Commit"
+    },
+    {
+      "parameters": {
+        "jsCode": "const commitNode = items[0].json;\nconst newCommitSha = commitNode.sha;\n\nconst createBranchItems = $items(\"Create Git Ref\");\nif (!createBranchItems || createBranchItems.length === 0) {\n    throw new Error(\"No output found from the 'Create Branch' node\");\n}\nconst baseCommitNode = createBranchItems[0].json;\n\nconst branchName = baseCommitNode.ref ? baseCommitNode.ref.replace(\"refs/heads/\", \"\") : \"main\";\nconst repositoryName = baseCommitNode.repository || \"[user_or_organization]/[repository_name]\";\n\nreturn [\n    {\n        json: {\n            repoInfo: {\n                repository: repositoryName,\n                branch: branchName\n            },\n            content: {\n                sha: newCommitSha\n            }\n        }\n    }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        304
+      ],
+      "id": "3b2506d1-8268-42d4-a22e-bb344b58a9e1",
+      "name": "Prepare Git Push"
+    },
+    {
+      "parameters": {
+        "jsCode": "const blobsItems = $items(\"Create Git Blobs\");\nconst detectChangesItems = $items(\"When Executed by Another Workflow\");\nconst createdBranch = $items(\"Create Git Ref\")[0].json;\nconst branch = createdBranch.ref.replace(\"refs/heads/\", \"\");\nconst base_tree = createdBranch.object.sha;\nconst tree = blobsItems.map((blobItem, index) => ({\n  path: detectChangesItems[index].json.path,\n  mode: \"100644\",\n  type: \"blob\",\n  sha: blobItem.json.sha\n}));\n\nreturn [\n  {\n    json: {\n      repoInfo: {\n        repository: $node[\"When Executed by Another Workflow\"].json.repository,\n        branch\n      },\n      content: {\n        base_tree,\n        tree\n      }\n    }\n  }\n];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        0
+      ],
+      "id": "2b1074d1-2c27-49d9-bd74-7187ca80fc9e",
+      "name": "Prepare Git Tree"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Create Git Ref",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Git Ref": {
+      "main": [
+        [
+          {
+            "node": "Prepare Get File Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get File Content": {
+      "main": [
+        [
+          {
+            "node": "Prepare Git Blobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Git Blobs": {
+      "main": [
+        [
+          {
+            "node": "Prepare Git Tree",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Git Tree": {
+      "main": [
+        [
+          {
+            "node": "Prepare Git Commit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Git Commit": {
+      "main": [
+        [
+          {
+            "node": "Prepare Git Push",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Git Push": {
+      "main": [
+        [
+          {
+            "node": "Format Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Get File Content": {
+      "main": [
+        [
+          {
+            "node": "Get File Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Git Blobs": {
+      "main": [
+        [
+          {
+            "node": "Create Git Blobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Git Commit": {
+      "main": [
+        [
+          {
+            "node": "Create Git Commit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Git Push": {
+      "main": [
+        [
+          {
+            "node": "Create Git Push",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Git Tree": {
+      "main": [
+        [
+          {
+            "node": "Create Git Tree",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9b597a45-1a02-408a-891c-43ea40661703",
+  "meta": {
+    "instanceId": "16c5a0d06e53775a97009d056c3cc64dfb112467542c23766a5da5af80993f84"
+  },
+  "id": "uWanSWIlS2e0gaSa",
+  "tags": []
+}

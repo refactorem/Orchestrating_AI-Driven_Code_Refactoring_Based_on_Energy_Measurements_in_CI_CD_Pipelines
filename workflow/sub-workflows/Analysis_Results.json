@@ -1,0 +1,178 @@
+{
+  "name": "Analysis Results",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1184,
+        144
+      ],
+      "id": "6139c567-3d7b-46be-bf0d-ecbc9fe7c396",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "jsCode": "function isShaKey(k){\n  return typeof k === 'string' && /^[0-9a-f]{40}$/.test(k);\n}\n\nfunction recurseFind(obj, path = []) {\n  const found = [];\n  if (obj && typeof obj === 'object') {\n    if (!Array.isArray(obj)) {\n      for (const k of Object.keys(obj)) {\n        const v = obj[k];\n        const currentPath = path.concat(k);\n        if (isShaKey(k) && v && typeof v === 'object' && Object.prototype.hasOwnProperty.call(v, 'averages')) {\n          found.push({ key: k, path: currentPath.join('.'), obj: v });\n        } else {\n          found.push(...recurseFind(v, currentPath));\n        }\n      }\n    } else {\n      for (let i = 0; i < obj.length; i++) {\n        found.push(...recurseFind(obj[i], path.concat(`[${i}]`)));\n      }\n    }\n  }\n  return found;\n}\n\nfunction summarize(diffs) {\n  const improved = diffs.filter(d => d.result === 'improved').length;\n  const worse = diffs.filter(d => d.result === 'worse').length;\n  const same = diffs.filter(d => d.result === 'same').length;\n\n  const validPercents = diffs\n    .map(d => d.percent_change)\n    .filter(p => typeof p === 'number' && !isNaN(p));\n\n  const avg_percent_change = validPercents.length\n    ? Number((validPercents.reduce((a, b) => a + b, 0) / validPercents.length).toFixed(4))\n    : null;\n\n  const overall = improved > worse ? 'improved' : worse > improved ? 'worse' : 'same';\n  return { improved, worse, same, avg_percent_change, overall };\n}\n\nfunction compareMetrics(o1, o2, path = []) {\n  const diffs = [];\n  for (const k of Object.keys(o1)) {\n    const p = path.concat(k);\n    const v1 = o1[k];\n    const v2 = o2 ? o2[k] : undefined;\n    if (v1 && typeof v1 === 'object' && !Array.isArray(v1)) {\n      diffs.push(...compareMetrics(v1, v2 || {}, p));\n    } else if (typeof v1 === 'number' && typeof v2 === 'number' && p.join('.').includes('consumption')) {\n      const diff = v2 - v1;\n      const percent = v1 !== 0 ? (diff / Math.abs(v1)) * 100 : null;\n      const status = diff < 0 ? 'improved' : diff > 0 ? 'worse' : 'same';\n      diffs.push({\n        metric: p.join('.'),\n        v1,\n        v2,\n        diff,\n        percent_change: percent,\n        result: status\n      });\n    }\n  }\n  return diffs;\n}\n\nlet root = null;\nif (Array.isArray(items) && items.length === 1) {\n  root = items[0].json;\n} else if (Array.isArray(items) && items.length > 1) {\n  const tmp = {};\n  for (let i = 0; i < items.length; i++) tmp[`item_${i}`] = items[i].json;\n  root = tmp;\n} else {\n  root = items && items[0] && items[0].json ? items[0].json : {};\n}\n\nconst foundCommits = recurseFind(root);\nif (foundCommits.length < 2) {\n  throw new Error(`Expected 2 commits, got ${foundCommits.length}`);\n}\n\nconst [{ key: key1, obj: obj1 }, { key: key2, obj: obj2 }] = foundCommits.slice(0,2);\nconst base1 = obj1.averages || obj1;\nconst base2 = obj2.averages || obj2;\nconst commitDetails = compareMetrics(base1, base2);\nconst commitSummary = summarize(commitDetails);\n\nfunction findSonarArrays(obj) {\n  const result = [];\n  function deepSearch(o) {\n    if (Array.isArray(o) && o.length && o.every(m => m.metric && m.value)) {\n      result.push(o);\n    } else if (o && typeof o === 'object') {\n      for (const v of Object.values(o)) deepSearch(v);\n    }\n  }\n  deepSearch(obj);\n  return result;\n}\n\nconst sonarArrays = findSonarArrays(root);\nif (sonarArrays.length < 2) {\n  throw new Error(`Expected 2 Sonar metric arrays, got ${sonarArrays.length}`);\n}\n\nfunction toMetricMap(arr) {\n  const map = {};\n  for (const m of arr) {\n    const num = Number(m.value);\n    if (!isNaN(num)) map[m.metric] = num;\n  }\n  return map;\n}\n\nconst sonarMain = toMetricMap(sonarArrays[0]);\nconst sonarRef = toMetricMap(sonarArrays[1]);\n\nconst sonarDiffs = [];\nfor (const metric of Object.keys(sonarMain)) {\n  if (typeof sonarMain[metric] === 'number' && typeof sonarRef[metric] === 'number') {\n    const v1 = sonarMain[metric];\n    const v2 = sonarRef[metric];\n    const diff = v2 - v1;\n    const percent = v1 !== 0 ? (diff / Math.abs(v1)) * 100 : null;\n    const status = diff < 0 ? 'improved' : diff > 0 ? 'worse' : 'same';\n    sonarDiffs.push({ metric, v1, v2, diff, percent_change: percent, result: status });\n  }\n}\n\nconst sonarSummary = summarize(sonarDiffs);\n\nreturn [{\n  json: {\n    original: key1,\n    refactored: key2,\n    energy: {\n      summary: commitSummary,\n      details: commitDetails\n    },\n    sonar: {\n      summary: sonarSummary,\n      details: sonarDiffs\n    }\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -944,
+        144
+      ],
+      "id": "cf81f407-f5aa-42c6-88c8-298945c4d4ff",
+      "name": "Compare Original vs Refactored"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f13ef2e7-ff5a-44fd-9709-d1861e14c43a",
+              "leftValue": "={{ \n  (\n    Math.abs($json[\"energy\"][\"summary\"][\"avg_percent_change\"]) >= 5 \n    && $json[\"energy\"][\"summary\"][\"overall\"] === \"improved\"\n  )\n  || (\n    Math.abs($json[\"energy\"][\"summary\"][\"avg_percent_change\"]) < 5 \n    && $json[\"sonar\"][\"summary\"][\"overall\"] === \"improved\"\n  )\n}}",
+              "rightValue": 5,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -720,
+        144
+      ],
+      "id": "c37351ac-f326-43f3-8cc1-a074086a5e06",
+      "name": "Has refactoring improved?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.github.com/repos/{{$node[\"When Executed by Another Workflow\"].json[\"repository\"]}}/merges",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"base\": \"{{$items('When Executed by Another Workflow')[0].json.branch}}\",\n  \"head\": \"{{$items('When Executed by Another Workflow')[1].json.branch}}\",\n  \"commit_message\": \"Auto-merge refactored branch after energy improvement\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -432,
+        16
+      ],
+      "id": "88f25a4c-b72e-480d-96fd-7fa15185100a",
+      "name": "Merge Refactor",
+      "credentials": {
+        "githubApi": {
+          "id": "jFgjSdNtWWIi5k0G",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://api.github.com/repos/{{ $node[\"When Executed by Another Workflow\"].json[\"repository\"]}}/git/refs/heads/{{$items('When Executed by Another Workflow')[1].json.branch}}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -128,
+        160
+      ],
+      "id": "04aea650-93d5-444b-a02e-0cbc9ee88ffa",
+      "name": "Delete Refactor",
+      "credentials": {
+        "githubApi": {
+          "id": "jFgjSdNtWWIi5k0G",
+          "name": "GitHub account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Compare Original vs Refactored",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compare Original vs Refactored": {
+      "main": [
+        [
+          {
+            "node": "Has refactoring improved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has refactoring improved?": {
+      "main": [
+        [
+          {
+            "node": "Merge Refactor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Delete Refactor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Refactor": {
+      "main": [
+        [
+          {
+            "node": "Delete Refactor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "50c805e4-05ea-4720-9f41-be6751629460",
+  "meta": {
+    "instanceId": "16c5a0d06e53775a97009d056c3cc64dfb112467542c23766a5da5af80993f84"
+  },
+  "id": "5yRSc2FWuICteu1I",
+  "tags": []
+}

@@ -1,0 +1,211 @@
+{
+  "name": "AI-Driven Code Refactoring",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -480,
+        16
+      ],
+      "id": "867ce377-dfc1-4e15-9a0b-d31e2f14c0c1",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "jsCode": "const SCORE_THRESHOLD = 50;\n\nconst originalFiles = $items(\"When Executed by Another Workflow\");\nconst aiEvaluations = $items(\"AI Agent 2\");\nconst aiRefactors = $items(\"AI Agent 1\");\n\nreturn aiEvaluations.map((evalItem, index) => {\n  const evalOutput = evalItem.json.output;\n  const refactoredOutput = aiRefactors[index]?.json.output;\n  const originalFile = originalFiles[index]?.json;\n\n  if (!evalOutput || !refactoredOutput || !originalFile) return null;\n\n  const match = evalOutput.match(/```json([\\s\\S]*?)```/);\n  const cleanJson = match ? match[1] : evalOutput;\n\n  let parsed;\n  try {\n    parsed = JSON.parse(cleanJson);\n  } catch {\n    return null;\n  }\n\n  if (!parsed.is_valid || parsed.score < SCORE_THRESHOLD) return null;\n\n  const encodedRefactored = Buffer.from(refactoredOutput, 'utf-8').toString('base64');\n  if (encodedRefactored === originalFile.content) return null;\n\n  return {\n    json: {\n      ...originalFile,\n      refactoredEncoded: encodedRefactored,\n      is_valid: parsed.is_valid,\n      score: parsed.score,\n      reason: parsed.reason\n    }\n  };\n}).filter(item => item !== null);\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        992,
+        192
+      ],
+      "id": "fa31268d-43b5-4ac6-a92d-ab10accd3b93",
+      "name": "Detect Code Changes"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        32,
+        272
+      ],
+      "id": "0b4b744f-58aa-4980-8c89-78aa7554c019",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "BGZu8ODnsK91ohBq",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        432,
+        240
+      ],
+      "id": "5ed4275a-41a0-4939-a747-6ab2cbfded40",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "BGZu8ODnsK91ohBq",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  const refactoredCode = item.json.output;\n  const originalCode = $node[\"Create Target Prompt Agent1\"].json[\"originalCode\"]\n\n  return {\n    json: {\n      original_code: originalCode || \"\",\n      refactored_code: refactoredCode || \"\",\n      chatInput: `\nYou are an expert code reviewer.\nCompare the original code and the refactored code.\nDetermine whether the refactoring:\n1. Maintains the same functionality.\n2. Does not introduce errors.\n3. Improves performance or readability.\n\nReturn a JSON object: { \"is_valid\": true/false, \"reason\": \"...\", \"score\": 0-100 }.\n\nOriginal Code:\n${originalCode || \"\"}\n\nRefactored Code:\n${refactoredCode || \"\"}\n`.trim()\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
+        32
+      ],
+      "id": "0bc35e3c-dc4c-4526-8d2c-43006f23ee05",
+      "name": "Create Target Prompt Agent2"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().flatMap(item => {\n  const file = item.json;\n  if (!file.content) return [];\n\n  const content = Buffer.from(file.content, file.encoding).toString('utf-8');\n  const language = file.language || \"unknown\";\n\n  const chatInput = `\nYou are a Green Software expert with deep knowledge of sustainable software development. \nRefactor the following ${language} code to be cleaner, more efficient, and environmentally responsible. \nProvide **only the refactored code**, with no explanations, comments, or Markdown formatting.\n\nOriginal Code:\n${content}\n`;\n\n  return [{\n    json: {\n      originalCode: content.trim(),\n      language: language,\n      chatInput: chatInput.trim()\n    }\n  }];\n});\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        16
+      ],
+      "id": "08128797-50fe-40af-901b-73901165ae22",
+      "name": "Create Target Prompt Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        16
+      ],
+      "id": "60eadf8d-8eb7-4a0b-866b-0dcbf1854be5",
+      "name": "AI Agent 1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        512,
+        32
+      ],
+      "id": "02334475-ecb5-4f22-94cf-6c3d447b51dd",
+      "name": "AI Agent 2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Create Target Prompt Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent 1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent 2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Target Prompt Agent2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Target Prompt Agent1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent 1": {
+      "main": [
+        [
+          {
+            "node": "Create Target Prompt Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent 2": {
+      "main": [
+        [
+          {
+            "node": "Detect Code Changes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "99b6e999-4ff7-46ae-8d4d-8ba2d14a71cb",
+  "meta": {
+    "instanceId": "16c5a0d06e53775a97009d056c3cc64dfb112467542c23766a5da5af80993f84"
+  },
+  "id": "SI98lulX1q6prFC3",
+  "tags": []
+}

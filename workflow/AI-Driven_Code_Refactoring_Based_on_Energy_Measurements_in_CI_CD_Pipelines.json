@@ -1,0 +1,318 @@
+{
+  "name": "AI-Driven Code Refactoring Based on Energy Measurements in CI/CD Pipelines",
+  "nodes": [
+    {
+      "parameters": {
+        "owner": {
+          "__rl": true,
+          "value": "[user_or_organization]",
+          "mode": "list",
+          "cachedResultName": "[user_or_organization]",
+          "cachedResultUrl": "https://github.com/[user_or_organization]"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "[repository_name]",
+          "mode": "list",
+          "cachedResultName": "[repository_name]",
+          "cachedResultUrl": "https://github.com/[user_or_organization]/[repository_name]"
+        },
+        "events": [
+          "push"
+        ],
+        "options": {}
+      },
+      "id": "063f7753-016b-4120-b221-51accaac1207",
+      "name": "Push Trigger",
+      "type": "n8n-nodes-base.githubTrigger",
+      "position": [
+        -1728,
+        368
+      ],
+      "webhookId": "e4fdf27b-d9d2-4dae-bcd3-a87f00857760",
+      "notesInFlow": false,
+      "typeVersion": 1,
+      "credentials": {
+        "githubApi": {
+          "id": "jFgjSdNtWWIi5k0G",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -416,
+        368
+      ],
+      "id": "2dd209a0-8431-411e-b948-67d0e573bf7d",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "TA3L464OWWs1YLtt",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/TA3L464OWWs1YLtt",
+          "cachedResultName": "Prepare Source Code"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {}
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -1488,
+        368
+      ],
+      "id": "031353d2-8314-40a8-8b54-d9e6f26eb04c",
+      "name": "Prepare Source Code"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "5yRSc2FWuICteu1I",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/5yRSc2FWuICteu1I",
+          "cachedResultName": "Analysis Results"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -128,
+        368
+      ],
+      "id": "b75ac6a3-c5d6-4e03-ade9-2643c7f1ae92",
+      "name": "Analysis Results"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "uWanSWIlS2e0gaSa",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/uWanSWIlS2e0gaSa",
+          "cachedResultName": "Create Refactor Branch"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {}
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -1024,
+        368
+      ],
+      "id": "0d523273-8d77-47ea-bdd1-59a21d955eaa",
+      "name": "Create Refactor Branch"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "zjfyGBhEWxjW2kQs",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/zjfyGBhEWxjW2kQs",
+          "cachedResultName": "Energy Measurements in CI/CD Pipelines"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -720,
+        480
+      ],
+      "id": "bc3605d0-3476-4ae0-91e9-30d0f68c958a",
+      "name": "Energy Measurement in CI/CD Pipeline",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "kDCbxUoVIfXC5wRU",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/kDCbxUoVIfXC5wRU",
+          "cachedResultName": "Static Code Analysis"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -720,
+        256
+      ],
+      "id": "8a60c554-56cd-469d-b0b0-a5c406885a40",
+      "name": "Static Code Analysis"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "SI98lulX1q6prFC3",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/SI98lulX1q6prFC3",
+          "cachedResultName": "AI-Driven Code Refactoring"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {}
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -1232,
+        368
+      ],
+      "id": "2515102b-d266-4f1f-a8b0-b99250f3d1d3",
+      "name": "AI-Driven Code Refactoring"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Push Trigger": {
+      "main": [
+        [
+          {
+            "node": "Prepare Source Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Analysis Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Source Code": {
+      "main": [
+        [
+          {
+            "node": "AI-Driven Code Refactoring",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Refactor Branch": {
+      "main": [
+        [
+          {
+            "node": "Energy Measurement in CI/CD Pipeline",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Static Code Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Energy Measurement in CI/CD Pipeline": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Static Code Analysis": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI-Driven Code Refactoring": {
+      "main": [
+        [
+          {
+            "node": "Create Refactor Branch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "de8b3481-0de8-483a-ab5d-d7857b42cc4d",
+  "meta": {
+    "instanceId": "16c5a0d06e53775a97009d056c3cc64dfb112467542c23766a5da5af80993f84"
+  },
+  "id": "rtsKvQ7bzUpFTON2",
+  "tags": []
+}

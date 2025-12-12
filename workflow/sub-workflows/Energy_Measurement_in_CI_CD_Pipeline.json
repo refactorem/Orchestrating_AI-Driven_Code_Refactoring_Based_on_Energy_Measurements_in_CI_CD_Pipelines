@@ -1,0 +1,277 @@
+{
+  "name": "Energy Measurement in CI/CD Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1488,
+        -240
+      ],
+      "id": "859c59b8-a888-41b3-b84c-daf195c39447",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.github.com/repos/{{ $node[\"When Executed by Another Workflow\"].json[\"repository\"].split('/')[0] }}/{{ $node[\"When Executed by Another Workflow\"].json[\"repository\"].split('/')[1] }}/actions/workflows/workflow.yml/dispatches",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"ref\": \"{{ $node[\"When Executed by Another Workflow\"].json[\"branch\"] }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1296,
+        -240
+      ],
+      "id": "a2e443ea-d95a-4a9f-a09a-37147b63dac1",
+      "name": "Dispatch Workflow",
+      "credentials": {
+        "githubApi": {
+          "id": "jFgjSdNtWWIi5k0G",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1104,
+        -240
+      ],
+      "id": "b3de6996-30a1-42f7-8b1d-80decbdaa7dd",
+      "name": "Wait 5 secs",
+      "webhookId": "2e16b232-6d45-47a6-aff1-4eca21d47018"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $node[\"When Executed by Another Workflow\"].json[\"repository\"].split('/')[0] }}/{{ $node[\"When Executed by Another Workflow\"].json[\"repository\"].split('/')[1] }}/actions/runs?branch={{ $node[\"When Executed by Another Workflow\"].json[\"branch\"] }}&event=workflow_dispatch",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"ref\": \"{{ $node[\"When Executed by Another Workflow\"].json[\"branch\"] }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -880,
+        -240
+      ],
+      "id": "a56afeb5-0015-40fd-9eb4-9615aab4e14e",
+      "name": "Fetch Dispatched Workflows",
+      "credentials": {
+        "githubApi": {
+          "id": "jFgjSdNtWWIi5k0G",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const runs = items[0].json.workflow_runs || [];\nif(runs.length === 0){\n    return [];\n}\nruns.sort((a, b) => new Date(b.run_started_at) - new Date(a.run_started_at));\nconst lastRun = runs[0];\n    return [\n        {\n            json: {\n                run_id: lastRun.id,\n                status: lastRun.status,\n                conclusion: lastRun.conclusion,\n                run_started_at: lastRun.run_started_at\n            }\n        }\n    ];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -672,
+        -240
+      ],
+      "id": "b825d871-3762-45b0-9fad-e91787f41ab4",
+      "name": "Filter my Dispatched Worfklow"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "072156bd-acee-4549-ae32-0d788b1f874a",
+              "leftValue": "={{$json[\"status\"]}}",
+              "rightValue": "completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -448,
+        -240
+      ],
+      "id": "4d9a48b2-48b5-4565-a31f-dbfb229b2a15",
+      "name": "Does my Dispatched Workflow completed?"
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -128,
+        -64
+      ],
+      "id": "3d5894c1-afb5-4b62-8acd-2c00e6d17824",
+      "name": "Wait 1min",
+      "webhookId": "2e16b232-6d45-47a6-aff1-4eca21d47018"
+    },
+    {
+      "parameters": {
+        "url": "=http://host.docker.internal:5000/wattsci/subtracted?repository={{ $node[\"When Executed by Another Workflow\"].json[\"repository\"] }}&branch={{ $node[\"When Executed by Another Workflow\"].json[\"branch\"] }}&commit_hash={{ $node[\"When Executed by Another Workflow\"].json[\"commit\"] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -128,
+        -256
+      ],
+      "id": "4cb74be6-7ab4-4645-82ec-c7d518720f0f",
+      "name": "Obtain Workflow Energy Measurement Results"
+    },
+    {
+      "parameters": {
+        "jsCode": "const caller = $node[\"When Executed by Another Workflow\"].json;\n\nreturn $input.all().map(item => ({\n  json: {\n    repository: caller.repository,\n    branch: caller.branch,\n    commit: caller.commit,\n    energy_measurement: {\n      ...item.json\n    }\n  }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        112,
+        -256
+      ],
+      "id": "d1f6986e-2d7e-41e1-8ef9-19dde40a9619",
+      "name": "Format Data"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Dispatch Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dispatch Workflow": {
+      "main": [
+        [
+          {
+            "node": "Wait 5 secs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 5 secs": {
+      "main": [
+        [
+          {
+            "node": "Fetch Dispatched Workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Dispatched Workflows": {
+      "main": [
+        [
+          {
+            "node": "Filter my Dispatched Worfklow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter my Dispatched Worfklow": {
+      "main": [
+        [
+          {
+            "node": "Does my Dispatched Workflow completed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Does my Dispatched Workflow completed?": {
+      "main": [
+        [
+          {
+            "node": "Obtain Workflow Energy Measurement Results",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 1min",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 1min": {
+      "main": [
+        [
+          {
+            "node": "Fetch Dispatched Workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtain Workflow Energy Measurement Results": {
+      "main": [
+        [
+          {
+            "node": "Format Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "cd20071f-5c22-4fd2-b0a6-ca0fb6e72862",
+  "meta": {
+    "instanceId": "16c5a0d06e53775a97009d056c3cc64dfb112467542c23766a5da5af80993f84"
+  },
+  "id": "zjfyGBhEWxjW2kQs",
+  "tags": []
+}

@@ -59,63 +59,63 @@ original,false,070ed6e7dc3f17c641b484e580554d016a1420d3,27,5.38,5.55
 original,false,070ed6e7dc3f17c641b484e580554d016a1420d3,28,5.31,5.52
 original,false,070ed6e7dc3f17c641b484e580554d016a1420d3,29,5.35,5.60
 original,false,070ed6e7dc3f17c641b484e580554d016a1420d3,30,5.39,5.52
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,1,0.8,0.82
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,2,0.76,0.78
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,3,0.77,0.79
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,4,0.76,0.79
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,5,0.76,0.78
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,6,0.77,0.79
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,7,0.77,0.78
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,8,0.77,0.79
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,9,0.92,0.93
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,10,0.77,0.79
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,11,0.79,0.8
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,12,0.78,0.79
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,13,0.77,0.79
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,14,0.78,0.8
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,15,0.77,0.79
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,16,0.78,0.8
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,17,0.77,0.79
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,18,0.77,0.8
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,19,0.77,0.79
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,20,0.78,0.79
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,21,0.77,0.79
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,22,0.78,0.78
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,23,0.77,0.79
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,24,0.78,0.8
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,25,0.77,0.79
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,26,0.78,0.8
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,27,0.77,0.79
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,28,0.77,0.8
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,29,0.77,0.79
-refactored,true,759eba45b547c7fae89f09ab9059399aebc89da9,30,0.78,0.79
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,1,0.61,0.63
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,2,0.57,0.59
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,3,0.58,0.60
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,4,0.57,0.60
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,5,0.57,0.59
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,6,0.58,0.60
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,7,0.58,0.59
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,8,0.58,0.60
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,9,0.73,0.74
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,10,0.58,0.60
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,11,0.60,0.59
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,12,0.58,0.60
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,13,0.58,0.60
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,14,0.58,0.60
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,15,0.58,0.60
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,16,0.58,0.60
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,17,0.58,0.60
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,18,0.58,0.60
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,19,0.58,0.60
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,20,0.58,0.60
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,21,0.58,0.60
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,22,0.58,0.60
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,23,0.58,0.60
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,24,0.58,0.60
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,25,0.59,0.61
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,26,0.59,0.61
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,27,0.59,0.61
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,28,0.59,0.61
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,29,0.59,0.61
-refactored,false,759eba45b547c7fae89f09ab9059399aebc89da9,30,0.59,0.61
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,1,0.8,0.82
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,2,0.76,0.78
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,3,0.77,0.79
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,4,0.76,0.79
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,5,0.76,0.78
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,6,0.77,0.79
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,7,0.77,0.78
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,8,0.77,0.79
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,9,0.92,0.93
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,10,0.77,0.79
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,11,0.79,0.8
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,12,0.78,0.79
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,13,0.77,0.79
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,14,0.78,0.8
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,15,0.77,0.79
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,16,0.78,0.8
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,17,0.77,0.79
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,18,0.77,0.8
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,19,0.77,0.79
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,20,0.78,0.79
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,21,0.77,0.79
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,22,0.78,0.78
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,23,0.77,0.79
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,24,0.78,0.8
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,25,0.77,0.79
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,26,0.78,0.8
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,27,0.77,0.79
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,28,0.77,0.8
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,29,0.77,0.79
+AI-generated refactored version,true,759eba45b547c7fae89f09ab9059399aebc89da9,30,0.78,0.79
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,1,0.61,0.63
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,2,0.57,0.59
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,3,0.58,0.60
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,4,0.57,0.60
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,5,0.57,0.59
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,6,0.58,0.60
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,7,0.58,0.59
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,8,0.58,0.60
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,9,0.73,0.74
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,10,0.58,0.60
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,11,0.60,0.59
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,12,0.58,0.60
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,13,0.58,0.60
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,14,0.58,0.60
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,15,0.58,0.60
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,16,0.58,0.60
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,17,0.58,0.60
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,18,0.58,0.60
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,19,0.58,0.60
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,20,0.58,0.60
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,21,0.58,0.60
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,22,0.58,0.60
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,23,0.58,0.60
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,24,0.58,0.60
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,25,0.59,0.61
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,26,0.59,0.61
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,27,0.59,0.61
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,28,0.59,0.61
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,29,0.59,0.61
+AI-generated refactored version,false,759eba45b547c7fae89f09ab9059399aebc89da9,30,0.59,0.61

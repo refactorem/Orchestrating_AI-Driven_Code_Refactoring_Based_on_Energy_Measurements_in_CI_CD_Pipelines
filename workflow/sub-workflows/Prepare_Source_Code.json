@@ -1,0 +1,167 @@
+{
+  "name": "Prepare Source Code",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        -208
+      ],
+      "id": "e0c8a266-89ad-4123-8e1d-62c7ed54cb0b",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputItems = $input.all();\nconst results = [];\n\nfor (const item of inputItems) {\n  const body = item.json.body;\n  const commits = body.commits || [];\n  const branch = body.ref ? body.ref.replace(\"refs/heads/\", \"\") : \"\";\n  const repository = body.repository.full_name;\n  const commitHash = body.after;\n\n  for (const commit of commits) {\n    const authorName = commit.author?.name || \"\";\n    const authorEmail = commit.author?.email || \"\";\n    const message = commit.message || \"\";\n    const timestamp = commit.timestamp || \"\";\n\n    const processFiles = (files, action) => {\n      if (!files) return;\n      for (const path of files) {\n        results.push({\n          json: {\n            repository,\n            branch,\n            commitHash,\n            authorName,\n            authorEmail,\n            message,\n            timestamp,\n            action,\n            path\n          }\n        });\n      }\n    };\n\n    processFiles(commit.added, \"added\");\n    processFiles(commit.modified, \"modified\");\n  }\n}\n\nreturn results;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -16,
+        -208
+      ],
+      "id": "22057f72-2267-41ca-b93f-ae9a64a6c7d1",
+      "name": "Parse GitHub Push"
+    },
+    {
+      "parameters": {
+        "jsCode": "const codeExtensions = [\n  // JavaScript / TypeScript\n  'js','jsx','ts','tsx',\n  // Python\n  'py','pyw',\n  // Java\n  'java','jsp',\n  // C / C++\n  'c','cpp','cxx','cc','h','hpp','hxx',\n  // C#\n  'cs',\n  // Go\n  'go',\n  // Ruby\n  'rb','rake',\n  // PHP\n  'php','phtml','php3','php4','php5','phps','phpt',\n  // Rust\n  'rs',\n  // Swift\n  'swift',\n  // Kotlin\n  'kt','kts',\n  // Objective-C\n  'm','mm',\n  // Scala\n  'scala','sc',\n  // Perl\n  'pl','pm','t',\n  // Shell / Bash\n  'sh','bash','zsh','ksh',\n  // HTML / CSS\n  'html','htm','xhtml','css','scss','sass','less',\n  // SQL\n  'sql','psql','mysql',\n  // JSON / YAML / TOML\n  'json','yml','yaml','toml',\n  // XML / XSL / XSD\n  'xml','xsl','xsd','xslt',\n  // Lua\n  'lua',\n  // Haskell\n  'hs','lhs',\n  // Elixir\n  'ex','exs',\n  // Erlang\n  'erl','hrl',\n  // Dart\n  'dart',\n  // R\n  'r','R',\n  // MATLAB / Octave\n  'm','mlx','oct',\n  // Julia\n  'jl',\n  // F#\n  'fs','fsi','fsx',\n  // Groovy\n  'groovy',\n  // Visual Basic\n  'vb','vbs','cls','frm',\n  // Assembly\n  'asm','s','S',\n  // Others\n  'bat','cmd','ps1','coffee','clj','cljs','cljc','lisp','lsp','scm','f90','f95','f03'\n];\n\nreturn $input.all().filter(item => {\n  const parts = item.json.path?.split('.');\n  const ext = parts?.[parts.length - 1]?.toLowerCase();\n  return codeExtensions.includes(ext);\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        -208
+      ],
+      "id": "804a1ce7-6bab-4cc2-82d4-e49cd8715bd1",
+      "name": "Keep Only Source Code"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{$json.repository}}/contents/{{$json.path}}?ref={{$json.branch}}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        448,
+        -208
+      ],
+      "id": "aef6e50c-3678-4f32-a02a-8f08231eb150",
+      "name": "Get File Contents",
+      "credentials": {
+        "githubApi": {
+          "id": "jFgjSdNtWWIi5k0G",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "=source bin/activate && \\\necho \"{{ $json[\"content\"] }}\" | base64 --decode > /tmp/code_to_guess.txt && \\\nguesslang -p /tmp/code_to_guess.txt && \\\nrm /tmp/code_to_guess.txt && \\\ndeactivate",
+        "cwd": "~/n8n_workflow/venv/venv_guesslang37"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        656,
+        -208
+      ],
+      "id": "f48a8da7-57a1-4609-9e5f-336369e2dd7c",
+      "name": "Guesslang",
+      "credentials": {
+        "sshPassword": {
+          "id": "56hZVsdJFFbXyLtd",
+          "name": "SSH Password account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const extensionToLanguage = {\n    \"py\": \"Python\",\n    \"js\": \"JavaScript\",\n    \"ts\": \"TypeScript\",\n    \"java\": \"Java\",\n    \"c\": \"C\",\n    \"cpp\": \"C++\",\n    \"cs\": \"C#\",\n    \"rb\": \"Ruby\",\n    \"go\": \"Go\",\n    \"php\": \"PHP\",\n    \"dart\": \"Dart\",\n    \"rs\": \"Rust\",\n    \"swift\": \"Swift\",\n    \"kt\": \"Kotlin\",\n    \"m\": \"Objective-C\",\n    \"scala\": \"Scala\",\n    \"hs\": \"Haskell\",\n    \"sh\": \"Shell\",\n    \"r\": \"R\",\n    \"pl\": \"Perl\",\n    \"lua\": \"Lua\",\n    \"groovy\": \"Groovy\",\n    \"xml\": \"XML\",\n    \"html\": \"HTML\",\n    \"css\": \"CSS\",\n    \"json\": \"JSON\",\n    \"md\": \"Markdown\"\n};\n\nconst fileItems = $items(\"Get File Contents\");\nconst codeItems = $items(\"Keep Only Source Code\");\n\nconst output = fileItems.map((fileItem, index) => {\n    const codeItem = codeItems[index];\n\n    const fileName = fileItem.json.name || \"\";\n    const guesslangOutput = fileItem.json.stdout || \"\";\n\n    let guessedLanguage = null;\n    if (guesslangOutput) {\n        const lines = guesslangOutput.split(\"\\n\").slice(1);\n        const firstLine = lines.find(line => line.trim() !== \"\");\n        if (firstLine) {\n            guessedLanguage = firstLine.trim().split(/\\s+/)[0];\n        }\n    }\n\n    let extensionLanguage = \"unknown\";\n    if (fileName) {\n        const match = fileName.match(/\\.([0-9a-zA-Z]+)$/);\n        const ext = match ? match[1].toLowerCase() : \"\";\n        extensionLanguage = extensionToLanguage[ext] || \"unknown\";\n    }\n\n    return {\n        json: {\n            ...codeItem.json,\n            ...fileItem.json,\n            language: guessedLanguage || extensionLanguage\n        }\n    };\n});\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        864,
+        -208
+      ],
+      "id": "0df88413-7995-4d49-a2bf-dd3398aa7c4d",
+      "name": "Format Data"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Parse GitHub Push",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse GitHub Push": {
+      "main": [
+        [
+          {
+            "node": "Keep Only Source Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Keep Only Source Code": {
+      "main": [
+        [
+          {
+            "node": "Get File Contents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get File Contents": {
+      "main": [
+        [
+          {
+            "node": "Guesslang",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guesslang": {
+      "main": [
+        [
+          {
+            "node": "Format Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "afe17576-8d80-46c3-b969-c7d1cf739d9b",
+  "meta": {
+    "instanceId": "16c5a0d06e53775a97009d056c3cc64dfb112467542c23766a5da5af80993f84"
+  },
+  "id": "TA3L464OWWs1YLtt",
+  "tags": []
+}
